@@ -31,14 +31,35 @@ class friscoBot():
         pass
 
     def generateVanRequest(self, driver):
-        driver.find_elements_by_xpath("//div[@class='day active']")[0].click()
+        try:
+            driver.find_elements_by_xpath("//div[@class='day active']")[0].click()
+            days = driver.find_elements_by_class_name('day')
+            for d in days:
+                d.click()
+        except:
+            print('Some error in calling van via ui')
+            pass
         time.sleep(0.5)
-        for y in range(20):
-            if driver.requests[-1*y].path == "/app/commerce/api/v1/users/590820/calendar/Van":
-                print("Van request found ", y)
-                van_req = driver.requests[-1*y]
+       # for y in range(20):
+       #     if driver.requests[-1*y].path == "/app/commerce/api/v1/users/590820/calendar/Van":
+       #         print("Van request found ", y)
+       #         van_req = driver.requests[-1*y]
+       #         return van_req
+           
+        vanfound = False
+        nr = 1
+        while vanfound==False:
+            if nr>50:
+                print('Exceeded limit of requests while searching for van, calling it prob doesnt work')
                 break
-        return van_req
+            if driver.requests[nr*-1].path == "/app/commerce/api/v1/users/590820/calendar/Van":
+                vanfound = True
+            else:
+                nr+=1
+        return driver.requests[-1*nr]
+
+
+
 
 
 
