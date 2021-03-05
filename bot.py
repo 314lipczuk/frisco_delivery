@@ -3,12 +3,14 @@ import time
 import requests
 import brotli
 import json
+import datetime
 
 ##TODO
 
 ##remake generateVanReq so that it is not retarded
 ##Create actual control flow
 ##Make it actually work
+
 
 class friscoBot():
     f = open('.pb.txt', 'r')
@@ -17,6 +19,11 @@ class friscoBot():
     crds = crds.split(":",1)
     email = crds[0]
     passw = crds[1]
+
+    def log(self, mes):
+        f=open('log.txt','a')
+        f.write(mes)
+        f.close()
 
     def login(self):
         driver = webdriver.Chrome()
@@ -27,8 +34,6 @@ class friscoBot():
         driver.find_elements_by_id("loginPassword")[0].send_keys(self.passw)
         driver.find_elements_by_xpath('/html/body/div[1]/div[2]/div/div[2]/div/div/form/section/button')[0].click()
         return driver
-    def run(self,driver):
-        pass
 
     def generateVanRequest(self, driver):
         try:
@@ -40,12 +45,6 @@ class friscoBot():
             print('Some error in calling van via ui')
             pass
         time.sleep(0.5)
-       # for y in range(20):
-       #     if driver.requests[-1*y].path == "/app/commerce/api/v1/users/590820/calendar/Van":
-       #         print("Van request found ", y)
-       #         van_req = driver.requests[-1*y]
-       #         return van_req
-           
         vanfound = False
         nr = 1
         while vanfound==False:
@@ -59,10 +58,6 @@ class friscoBot():
         return driver.requests[-1*nr]
 
 
-
-
-
-
     def checkSchedule(self, driver):
         time.sleep(1)
         driver.find_element_by_class_name('header-delivery').click()
@@ -71,9 +66,21 @@ class friscoBot():
         print(van_req.response)
         r= requests.get(van_req.url,headers=van_req.headers )
         jsn=json.loads(r.text)
-        print(jsn['firstOpenWindow']['deliveryWindow']['startsAt'])
+        return datetime.datetime.fromisoformat(jsn['firstOpenWindow']['deliveryWindow']['startsAt'])
         
+    def run(self):
+        driver = self.login()
+        now = datetime.datetime.now()
+        reserved = False
+        while not reserved:
+            tmp = self.checkSchedule(driver)
+
+
+
+
+
+
+
 if __name__ == "__main__":
     b = friscoBot()
-    drvr = b.login()
-    b.checkSchedule(drvr)
+    b.run()
