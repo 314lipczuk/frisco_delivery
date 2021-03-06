@@ -12,6 +12,7 @@ import datetime
 
 ##remake generateVanReq so that it is not retarded
 ##Make it actually work
+##Get van request only once and then abandon the driver untill the reservation
 
 
 class friscoBot():
