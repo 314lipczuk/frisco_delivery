@@ -1,4 +1,6 @@
-from seleniumwire import webdriver
+#from seleniumwire import webdriver
+from selenium import webdriver
+import sys
 import time
 import requests
 import brotli
@@ -68,16 +70,25 @@ class friscoBot():
         jsn=json.loads(r.text)
         return datetime.datetime.fromisoformat(jsn['firstOpenWindow']['deliveryWindow']['startsAt'])
         
+    def verifyTimes(self, sch):
+        now = datetime.datetime.now()
+        if(int(sys.argv[1])<=1):
+            raise ValueError
+        now = datetime.datetime.now()
+        allowed_td = datetime.timedelta(days=int(sys.argv[1]))
+        if sch-now >= datetime.timedelta(days=1) and sch- allowed_td >= now:
+            print('Found')
+            return True
+        else:
+            return False
+
     def run(self):
         driver = self.login()
-        now = datetime.datetime.now()
         reserved = False
         while not reserved:
-            tmp = self.checkSchedule(driver)
-
-
-
-
+            sch = checkSchedule(driver)
+            if verifyTimes():
+                print('ending')
 
 
 
