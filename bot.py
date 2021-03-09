@@ -48,7 +48,6 @@ class friscoBot():
             driver.find_element_by_class_name('header-delivery').click()
             time.sleep(3)
         try:
-            #driver.find_elements_by_xpath("//div[@class='day active']")[0].click()
             days = driver.find_elements_by_class_name('day')
             for d in days:
                 d.click()
@@ -76,8 +75,6 @@ class friscoBot():
     def checkSchedule(self, driver):
         if(self.van_Request is None):
             self.generateVanRequest(driver)
-        #time.sleep(1)
-        #driver.find_element_by_class_name('header-delivery').click()
         time.sleep(3)
         van_req = self.van_Request
         r= requests.get(van_req.url,headers=van_req.headers )
@@ -87,15 +84,25 @@ class friscoBot():
         
     def verifyTimes(self, sch):
         now = datetime.datetime.now(timezone('Europe/Warsaw'))
+        print(now)
+        print(sch)
         allowed_td = datetime.timedelta(days=int(sys.argv[1]))
-        if sch-now >= datetime.timedelta(days=1) and sch- allowed_td >= now:
+        if sch- allowed_td >= now:
             print('Found')
             return True
         else:
             return False
 
     def acceptDelivery(self,driver):
-        pass
+        if driver.find_elements_by_class_name('ps-active-y') != []:
+            driver.find_element_by_class_name('header-delivery').click()
+            time.sleep(3)
+        driver.find_element_by_class_name('header-delivery').click()
+        time.sleep(2)
+        driver.find_element_by_class_name('available').click()
+        driver.find_element_by_xpath("/html/body/div[1]/div/div[3]/div/div[1]/div[2]/div[2]/div[2]/div/div/div[3]/div[2]/div/div[2]").click()
+        print('there was an attempt') 
+
     def run(self):
         if(int(sys.argv[1])<=1):
             raise ValueError
@@ -109,11 +116,11 @@ class friscoBot():
                 print('passed:ending')
                 reserved = True
             else:
-                print('goin to sleep, '+sch )
+                print('goin to sleep, ')
+                print(sch )
                 time.sleep(60)
                 print('rumble again')
-
-
+        time.sleep(300)
 
 if __name__ == "__main__":
     b = friscoBot()
